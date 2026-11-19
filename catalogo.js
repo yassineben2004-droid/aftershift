@@ -27,7 +27,7 @@ const CATALOGO = {
       nome: 'Heated Ankle & Foot Massager',
       breve: 'Ankle Massager (pair)',
       pagina: 'heated-ankle-massager.html',
-      prezzo: 4999,
+      prezzo: 6999,
       emoji: '🦶',
       accento: '#ff6a3d',
       unita: ['pair', 'pairs'],

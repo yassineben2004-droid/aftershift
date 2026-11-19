@@ -14,7 +14,7 @@ Stesso motore di PijamaMania: sito statico + checkout Stripe sul nostro dominio 
 | `terms.html`, `privacy.html`, `shipping.html`, `contact.html` | Pagine legali in inglese |
 
 ## Prezzi attuali
-1 paio $49.99 · 2 paia $84.98 (-15%) · 3 paia $115.48 (-23%) · spedizione gratis.
+1 paio $69.99 · 2 paia $118.98 (-15%) · 3 paia $161.68 (-23%) · spedizione gratis.
 
 ## Variabili d'ambiente su Vercel
 - `STRIPE_SECRET_KEY` — la `sk_live_` dello stesso account Stripe di PijamaMania
