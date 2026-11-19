@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="img/favicon.png">
+<title>Checkout — AfterShift</title>
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+:root{
+  --notte:#0b1f3d;
+  --sabbia:#fbf7f1;
+  --bianco:#ffffff;
+  --testo:#17243a;
+  --grigio:#5e6b80;
+  --linea:#e2d9cb;
+  --squalo:#2f5fa8;
+  --corallo:#ff6a3d;
+  --ok:#1f9d6b;
+  --font:'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--sabbia);color:var(--testo);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--squalo)}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--notte)}
+.indietro{font-size:13px;color:#c9d5e6;text-decoration:none}
+
+.wrap{max-width:980px;margin:0 auto;padding:22px 18px 60px}
+.cols{display:grid;gap:22px}
+@media(min-width:880px){.cols{grid-template-columns:1.25fr .85fr;gap:44px;align-items:start}}
+@media(max-width:879px){.riepilogo{order:-1}}
+
+h1{font-size:24px;font-weight:800;letter-spacing:-.6px;margin-bottom:20px;color:var(--notte)}
+h2{font-size:12.5px;font-weight:800;letter-spacing:1px;color:var(--grigio);margin:26px 0 12px}
+h2:first-of-type{margin-top:0}
+
+/* riepilogo */
+.riepilogo{background:var(--bianco);border:1px solid var(--linea);border-radius:16px;padding:18px 20px}
+@media(min-width:880px){.riepilogo{position:sticky;top:24px}}
+.righe{padding-bottom:6px;border-bottom:1px solid var(--linea)}
+.riga-prod{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.riga-prod .pr{margin-left:auto;font-weight:700;font-size:14px;white-space:nowrap}
+.mini .em{display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:24px}
+.modifica{display:inline-block;font-size:13px;margin:4px 0 2px}
+.mini{width:62px;height:62px;border-radius:11px;flex:0 0 62px;background:var(--sabbia);overflow:hidden}
+.mini img{width:100%;height:100%;object-fit:cover}
+.riga-prod .nome{font-weight:800;font-size:15px;color:var(--notte)}
+.riga-prod .var{font-size:13px;color:var(--grigio);margin-top:2px}
+.tot-riga{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;margin-top:11px;color:var(--grigio)}
+.tot-riga.finale{color:var(--notte);font-size:19px;font-weight:800;border-top:1px solid var(--linea);padding-top:13px;margin-top:14px}
+.gratis{color:var(--ok);font-weight:700}
+
+/* form */
+.campo{margin-bottom:14px}
+.campo label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:var(--grigio)}
+input[type=text],input[type=email],select{
+  width:100%;background:var(--bianco);
+  border:1px solid var(--linea);border-radius:11px;
+  padding:14px 15px;font-size:16px;color:var(--testo);
+  font-family:var(--font);outline:none;transition:.15s;
+}
+input::placeholder{color:#a3acb9}
+input:focus{border-color:var(--squalo);box-shadow:0 0 0 3px rgba(59,143,214,.15)}
+.due{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+#payment-element{margin-top:6px}
+
+.paga{
+  width:100%;margin-top:22px;
+  background:var(--corallo);color:#fff;
+  border:0;border-radius:14px;padding:19px;
+  font-size:17px;font-weight:800;cursor:pointer;font-family:var(--font);
+  box-shadow:0 10px 26px rgba(255,106,61,.28);
+}
+.paga:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+.nota{margin-top:14px;font-size:12.5px;color:var(--grigio);text-align:center}
+.errore{margin-top:14px;background:#fff0f0;border:1px solid #f5c2c2;color:#b42318;padding:13px 15px;border-radius:11px;font-size:14px;display:none}
+.caricamento{color:var(--grigio);font-size:14px;padding:30px 0;text-align:center}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:gira .7s linear infinite;vertical-align:-2px;margin-right:7px}
+@keyframes gira{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body data-no-cart>
+
+<header>
+  <a href="index.html"><img src="img/logo.png" alt="AfterShift" style="height:30px;width:auto"></a>
+  <a class="indietro" href="index.html">← Back to shop</a>
+</header>
+
+<div class="wrap">
+  <div class="cols">
+
+    <div>
+      <h1>Complete your order</h1>
+      <form id="form-pagamento">
+
+        <h2>CONTACT</h2>
+        <div class="campo">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@email.com" required>
+        </div>
+
+        <h2>SHIPPING</h2>
+        <div class="campo due">
+          <div>
+            <label for="nome">First name</label>
+            <input type="text" id="nome" placeholder="Jane" required>
+          </div>
+          <div>
+            <label for="cognome">Last name</label>
+            <input type="text" id="cognome" placeholder="Smith" required>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="paese">Country</label>
+          <select id="paese" required></select>
+        </div>
+        <div class="campo">
+          <label for="via">Address</label>
+          <input type="text" id="via" placeholder="123 Main Street" required>
+        </div>
+        <div class="campo">
+          <label for="via2">Apartment, suite, etc. (optional)</label>
+          <input type="text" id="via2" placeholder="Apt 4B">
+        </div>
+        <div class="campo due">
+          <div>
+            <label for="citta">City</label>
+            <input type="text" id="citta" placeholder="Austin" required>
+          </div>
+          <div>
+            <label for="cap">ZIP / Postal code</label>
+            <input type="text" id="cap" placeholder="78701" required>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="stato">State / Province / Region</label>
+          <input type="text" id="stato" placeholder="TX">
+        </div>
+        <div class="campo">
+          <label for="telefono">Phone (for the courier)</label>
+          <input type="text" id="telefono" placeholder="+1 555 123 4567">
+        </div>
+
+        <h2>PAYMENT</h2>
+        <div id="payment-element"><div class="caricamento">Loading payment methods…</div></div>
+
+        <button class="paga" id="paga" type="submit" disabled>Pay <span id="totBtn"></span></button>
+        <div class="errore" id="errore"></div>
+        <div class="nota">By clicking “Pay” you confirm your order and accept our <a href="terms.html" target="_blank">Terms of Sale</a> and <a href="shipping.html#returns" target="_blank">Return Policy</a>. Your data is handled as described in our <a href="privacy.html" target="_blank">Privacy Policy</a>.</div>
+        <div class="nota">🔒 Payments secured by Stripe. Your card details never touch our servers.</div>
+      </form>
+    </div>
+
+    <div class="riepilogo">
+      <div class="righe" id="righe"><div class="var">Loading…</div></div>
+      <a class="modifica" href="index.html" id="modifica">Edit cart</a>
+      <div class="tot-riga"><span>Subtotal</span><span id="subtotale">—</span></div>
+      <div class="tot-riga" id="rigaSconto" style="display:none"><span>Bundle discount</span><span class="gratis" id="sconto">—</span></div>
+      <div class="tot-riga"><span>Shipping</span><span class="gratis">Free</span></div>
+      <div class="tot-riga finale"><span>Total</span><span id="totale">—</span></div>
+    </div>
+
+  </div>
+</div>
+
+
+<script src="catalogo.js"></script>
+<script src="carrello.js"></script>
+<script>
+// Stripe publishable key (public: it can live in the site code). Same Stripe account as the other stores.
+const STRIPE_PUBLIC_KEY = 'pk_live_51HUprcHeIz0GVO4KOlGb3ZdLrn4OfWrqgr7tjmMkFYiPK0RiaeM11B11CTFK67MptXSM47rhaZTfjq2F3e9W4xMO00HXznXO8v';
+
+// countries we ship to (ISO code, name). Most common first.
+const PAESI = [['US','United States'],['CA','Canada'],['GB','United Kingdom'],['AU','Australia'],['IE','Ireland'],['NZ','New Zealand'],
+  ['AT','Austria'],['BE','Belgium'],['CH','Switzerland'],['CZ','Czech Republic'],['DE','Germany'],['DK','Denmark'],['ES','Spain'],
+  ['FI','Finland'],['FR','France'],['GR','Greece'],['HR','Croatia'],['HU','Hungary'],['IT','Italy'],['LU','Luxembourg'],
+  ['NL','Netherlands'],['NO','Norway'],['PL','Poland'],['PT','Portugal'],['RO','Romania'],['SE','Sweden'],['SI','Slovenia'],
+  ['SK','Slovakia'],['AE','United Arab Emirates'],['IL','Israel'],['JP','Japan'],['KR','South Korea'],['SG','Singapore'],
+  ['HK','Hong Kong'],['MX','Mexico'],['BR','Brazil'],['ZA','South Africa']];
+const selPaese = document.getElementById('paese');
+selPaese.innerHTML = PAESI.map(([c, n]) => `<option value="${c}">${n}</option>`).join('');
+try {   // pre-select the visitor's country from the browser language (en-GB → GB), fallback US
+  const reg = (navigator.language || '').split('-')[1];
+  if (reg && PAESI.some(([c]) => c === reg.toUpperCase())) selPaese.value = reg.toUpperCase();
+} catch (e) {}
+
+const params = new URLSearchParams(location.search);
+const articoli = Carrello.leggi();
+if (!articoli.length) location.replace('index.html');
+
+const usd = CATALOGO.fmt;
+const mostraErrore = m => { const e = document.getElementById('errore'); e.textContent = m; e.style.display = 'block'; };
+
+const codice = params.get('codice') || undefined;   // only for the test order
+let stripe, elements;
+
+async function chiediServer(extra){
+  const r = await fetch('/api/create-payment-intent', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ articoli, codice, ...extra })
+  });
+  if(!r.ok) throw new Error('response ' + r.status);
+  return r.json();
+}
+
+async function avvia(){
+  stripe = Stripe(STRIPE_PUBLIC_KEY);
+
+  // quote only: nothing is created on Stripe until the customer clicks "Pay"
+  let dati;
+  try {
+    dati = await chiediServer({ solo_prezzo: true });
+  } catch(err){
+    const box = document.querySelector('#payment-element .caricamento');
+    if(box) box.textContent = 'Unable to start the payment.';
+    mostraErrore('Something went wrong. Reload the page or try again in a moment.');
+    return;
+  }
+
+  const { importo, pieno, pct, righe, test } = dati;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+  // summary: numbers come from the server, not the browser
+  document.getElementById('righe').innerHTML = righe.map((r, i) => {
+    const prod = CATALOGO.prodotti[articoli[i].p];
+    return `<div class="riga-prod">
+      <div class="mini"><img src="${prod.foto[0]}" alt="" onerror="this.outerHTML='<span class=em>${prod.emoji}</span>'"></div>
+      <div><div class="nome">${esc(r.nome)}</div><div class="var">${esc(r.dettagli)}</div></div>
+      <div class="pr">${usd(r.prezzo)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('modifica').onclick = e => { e.preventDefault(); Carrello.apri(); };
+  window.addEventListener('as-cart', () => location.reload());   // if the cart changes, recompute everything
+  document.getElementById('subtotale').textContent = usd(pieno);
+  document.getElementById('totale').textContent    = usd(importo);
+  document.getElementById('totBtn').textContent    = usd(importo);
+
+  if(pieno > importo){
+    document.querySelector('#rigaSconto span').textContent = test ? 'Test order' : 'Bundle discount -' + pct + '%';
+    document.getElementById('sconto').textContent = '− ' + usd(pieno - importo);
+    document.getElementById('rigaSconto').style.display = 'flex';
+  }
+
+  // payment form styled like the site: the customer never leaves AfterShift
+  elements = stripe.elements({
+    mode:'payment',
+    amount: importo,
+    currency: CATALOGO.valuta_iso,
+    appearance:{
+      theme:'stripe',
+      variables:{
+        colorPrimary:'#2f5fa8',
+        colorBackground:'#ffffff',
+        colorText:'#17243a',
+        colorTextPlaceholder:'#a3acb9',
+        colorDanger:'#b42318',
+        fontFamily:'Helvetica Neue, Helvetica, Arial, sans-serif',
+        borderRadius:'11px',
+        spacingUnit:'4px'
+      },
+      rules:{
+        '.Input':{ border:'1px solid #e2d9cb', padding:'14px 15px', boxShadow:'none' },
+        '.Input:focus':{ border:'1px solid #2f5fa8', boxShadow:'0 0 0 3px rgba(47,95,168,.15)' },
+        '.Label':{ color:'#5e6b80', fontWeight:'600', fontSize:'13px' },
+        '.Tab':{ border:'1px solid #e2d9cb', boxShadow:'none' },
+        '.Tab--selected':{ border:'1px solid #2f5fa8', color:'#2f5fa8' }
+      }
+    }
+  });
+
+  const paymentElement = elements.create('payment', { layout:'tabs' });
+  const caric = document.querySelector('#payment-element .caricamento');
+  if(caric) caric.remove();
+  paymentElement.mount('#payment-element');
+
+  document.getElementById('paga').disabled = false;
+}
+
+function ripristinaBottone(){
+  const bottone = document.getElementById('paga');
+  bottone.disabled = false;
+  bottone.innerHTML = 'Pay <span id="totBtn">' + document.getElementById('totale').textContent + '</span>';
+}
+
+document.getElementById('form-pagamento').addEventListener('submit', async e => {
+  e.preventDefault();
+  if(!elements) return;
+
+  const bottone = document.getElementById('paga');
+  bottone.disabled = true;
+  bottone.innerHTML = '<span class="spinner"></span>Processing…';
+  document.getElementById('errore').style.display = 'none';
+
+  // 1) validate the card details
+  const { error: erroreModulo } = await elements.submit();
+  if(erroreModulo){
+    mostraErrore(erroreModulo.message || 'Please check your payment details.');
+    ripristinaBottone();
+    return;
+  }
+
+  // 2) only now the payment is created on Stripe
+  let clientSecret;
+  try {
+    ({ clientSecret } = await chiediServer({}));
+  } catch(err){
+    mostraErrore('We couldn\'t start the payment. Please try again in a moment.');
+    ripristinaBottone();
+    return;
+  }
+
+  const v = id => document.getElementById(id).value.trim();
+  // 3) confirm
+  const { error } = await stripe.confirmPayment({
+    elements,
+    clientSecret,
+    confirmParams:{
+      return_url: location.origin + '/thank-you.html',
+      receipt_email: v('email'),
+      shipping:{
+        name: v('nome') + ' ' + v('cognome'),
+        phone: v('telefono'),
+        address:{
+          line1:       v('via'),
+          line2:       v('via2') || undefined,
+          postal_code: v('cap'),
+          city:        v('citta'),
+          state:       v('stato') || undefined,
+          country:     v('paese')
+        }
+      }
+    }
+  });
+
+  // we only get here if the payment did NOT go through
+  if(error){
+    mostraErrore(error.message || 'Payment failed. Please check your card details.');
+    ripristinaBottone();
+  }
+});
+
+avvia();
+</script>
+</body>
+</html>

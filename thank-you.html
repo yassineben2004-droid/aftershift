@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="img/favicon.png">
+<title>Order confirmed — AfterShift</title>
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+:root{--notte:#0b1f3d;--sabbia:#fbf7f1;--corallo:#ff6a3d;--testo:#17243a;--grigio:#5e6b80}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:var(--sabbia);color:var(--testo);
+display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;line-height:1.55}
+.box{max-width:440px;background:#fff;border:1px solid #e7dfd2;border-radius:20px;padding:34px 26px;box-shadow:0 12px 34px rgba(11,31,61,.07)}
+.cerchio{width:74px;height:74px;border-radius:50%;
+display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 20px}
+h1{font-size:26px;font-weight:800;letter-spacing:-.7px;margin-bottom:12px;color:var(--notte)}
+p{color:var(--grigio);font-size:15.5px;margin-bottom:10px}
+.btn{display:inline-block;margin-top:20px;background:var(--corallo);color:#fff;
+padding:16px 30px;border-radius:13px;font-weight:800;text-decoration:none;font-size:15.5px}
+.marchio{margin-top:28px;display:inline-block;background:var(--notte);border-radius:12px;padding:10px 16px}
+.attesa{color:var(--grigio)}
+</style>
+</head>
+<body data-no-cart>
+<div class="box" id="box">
+  <div class="attesa">Checking your payment…</div>
+</div>
+
+<script src="catalogo.js"></script>
+<script src="carrello.js"></script>
+<script>
+const STRIPE_PUBLIC_KEY = 'pk_live_51HUprcHeIz0GVO4KOlGb3ZdLrn4OfWrqgr7tjmMkFYiPK0RiaeM11B11CTFK67MptXSM47rhaZTfjq2F3e9W4xMO00HXznXO8v';
+
+const stripe = Stripe(STRIPE_PUBLIC_KEY);
+const clientSecret = new URLSearchParams(location.search).get('payment_intent_client_secret');
+const box = document.getElementById('box');
+
+function mostra(icona, titolo, testo, colore){
+  box.innerHTML =
+    '<div class="cerchio" style="background:' + colore + '">' + icona + '</div>' +
+    '<h1>' + titolo + '</h1>' +
+    '<p>' + testo + '</p>' +
+    '<a class="btn" href="index.html">Back to shop</a>' +
+    '<div><span class="marchio"><img src="img/logo.png" alt="AfterShift" style="height:24px;width:auto;display:block"></span></div>';
+}
+
+if(!clientSecret){
+  mostra('🛒', 'No order to show', 'Looks like you landed here by mistake.', '#e7f2fc');
+} else {
+  stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+    switch(paymentIntent && paymentIntent.status){
+      case 'succeeded':
+        Carrello.svuota();   // order placed: the cart starts empty again
+        mostra('✓', 'Order confirmed!',
+          'Thank you, we\'ve received your payment. A confirmation email is on its way, and you\'ll get your tracking number as soon as your order ships.',
+          '#e6f6ee');
+        // send the confirmation email (the server checks with Stripe that the payment is real)
+        fetch('/api/conferma-ordine', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ id: paymentIntent.id })
+        }).catch(() => {});
+        break;
+      case 'processing':
+        mostra('⏳', 'Payment processing',
+          'Your bank is confirming the transaction. We\'ll email you as soon as everything is done.',
+          '#fff6dc');
+        break;
+      default:
+        mostra('✕', 'Payment failed',
+          'We couldn\'t charge your card. No money was taken: you can try again whenever you like.',
+          '#fff0f0');
+    }
+  });
+}
+</script>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

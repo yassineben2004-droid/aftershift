@@ -1,0 +1,10 @@
+{
+  "name": "aftershift",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AfterShift - worldwide store with built-in Stripe checkout",
+  "dependencies": {
+    "nodemailer": "^6.9.0",
+    "stripe": "^17.0.0"
+  }
+}
