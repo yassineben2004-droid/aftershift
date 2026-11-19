@@ -10,7 +10,7 @@ const path = require('path');
 const C = require('../catalogo.js');
 
 const RADICE = path.join(__dirname, '..');
-const SITO = 'https://aftershift.vercel.app';     // ⚠️ change when the custom domain is live
+const SITO = 'https://aftershiftstore.shop';
 const fmt = C.fmt;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 

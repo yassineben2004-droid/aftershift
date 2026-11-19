@@ -12,7 +12,7 @@
 const CATALOGO = {
 
   valuta_iso: 'usd',
-  email: 'aftershift.store@gmail.com',     // ⚠️ conferma l'email vera dello store
+  email: 'support@aftershiftstore.shop',
 
   // bundle discount on the whole cart, based on HOW MANY items are in it
   // (any mix of products). The highest key means "or more".

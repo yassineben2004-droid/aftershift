@@ -12,9 +12,10 @@
 
 const Stripe = require('stripe');
 const nodemailer = require('nodemailer');
+const EMAIL_STORE = require('../catalogo.js').email;   // indirizzo pubblico (alias del dominio)
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const SITO = 'https://aftershift.vercel.app';
+const SITO = 'https://aftershiftstore.shop';
 
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
   c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -49,7 +50,7 @@ function mailCliente({ numero, nome, prodotto, variante, qta, totale, indirizzo,
       </p>
     </div>
   </div>
-  <p style="text-align:center;font-size:12px;color:#8a99ad;margin:16px 0 0">AfterShift · ${esc(process.env.GMAIL_USER || '')}</p>
+  <p style="text-align:center;font-size:12px;color:#8a99ad;margin:16px 0 0">AfterShift · ${esc(EMAIL_STORE)}</p>
 </div>`;
   const text =
 `Thank you${nome ? ', ' + nome : ''}! Your order is confirmed.
@@ -120,6 +121,7 @@ module.exports = async (req, res) => {
     await posta.sendMail({
       from: `"AfterShift" <${process.env.GMAIL_USER}>`,
       to: pi.receipt_email,
+      replyTo: EMAIL_STORE,
       subject: `Order ${dati.numero} confirmed 🎉`,
       html, text
     });
