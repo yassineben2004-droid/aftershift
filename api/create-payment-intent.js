@@ -12,7 +12,7 @@ const SPEDIZIONE = 0;   // gratuita
 
 // Codice di prova SEGRETO: se su Vercel esiste la variabile CODICE_TEST
 // (almeno 8 caratteri) e il link del checkout contiene ?codice=<quel valore>,
-// l'ordine costa 0,50 $ (il minimo che Stripe accetta in dollari).
+// l'ordine costa 0,50 € (il minimo che Stripe accetta in euro).
 // Per disattivarlo basta cancellare la variabile su Vercel.
 const IMPORTO_TEST = 50;
 function codiceTestValido(codice){
@@ -47,7 +47,7 @@ async function suffissoEstratto(){
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
-    return res.status(405).json({ errore: 'Method not allowed' });
+    return res.status(405).json({ errore: 'Metodo non consentito' });
   }
 
   try {
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     // articoli: [{p:'ankle'}, ...]
     let articoli = Array.isArray(body.articoli) ? body.articoli : [];
     if (articoli.length < 1 || articoli.length > C.maxPezzi)
-      return res.status(400).json({ errore: 'Invalid cart' });
+      return res.status(400).json({ errore: 'Carrello non valido' });
     // tengo solo i campi che conosco, così nessuno può infilare roba strana
     articoli = articoli.map(a => {
       const prod = a && C.prodotti[a.p];
@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
       return pulito;
     });
     const conto = C.totale(articoli);
-    if (!conto) return res.status(400).json({ errore: 'Invalid items' });
+    if (!conto) return res.status(400).json({ errore: 'Articoli non validi' });
 
     const qta = conto.righe.length;
     const pieno = conto.pieno;
@@ -83,15 +83,15 @@ module.exports = async (req, res) => {
     // 2) il cliente ha cliccato "Paga": ora si crea il pagamento
     const prodottiDiversi = [...new Set(conto.righe.map(r => r.breve))];
     const metadata = {
-      prodotto: prodottiDiversi.length === 1 ? conto.righe[0].nome : 'AfterShift — ' + qta + ' items',
+      prodotto: prodottiDiversi.length === 1 ? conto.righe[0].nome : 'AfterShift — ' + qta + ' articoli',
       taglia_nome: nomeVariante.slice(0, 490),
       qta: String(qta),
-      sconto_applicato: '$' + ((pieno - importo) / 100).toFixed(2) + (conto.pct && !test ? ' (bundle -' + conto.pct + '%)' : ''),
+      sconto_applicato: C.fmt(pieno - importo) + (conto.pct && !test ? ' (bundle -' + conto.pct + '%)' : ''),
       ordine_di_prova: test ? 'si' : 'no'
     };
     // un campo per articolo (Stripe accetta max 500 caratteri per valore)
     conto.righe.forEach((r, i) => {
-      metadata['articolo_' + (i + 1)] = (r.nome + ' — ' + r.dettagli + ' — $' + (r.prezzo / 100).toFixed(2)).slice(0, 490);
+      metadata['articolo_' + (i + 1)] = (r.nome + ' — ' + r.dettagli + ' — ' + C.fmt(r.prezzo)).slice(0, 490);
     });
 
     const dati = {
@@ -130,6 +130,6 @@ module.exports = async (req, res) => {
 
   } catch (err) {
     console.error('Errore PaymentIntent:', err);
-    return res.status(500).json({ errore: 'Unable to create the payment' });
+    return res.status(500).json({ errore: 'Impossibile creare il pagamento' });
   }
 };

@@ -1,5 +1,5 @@
-/* Shared product page logic (1/2/3 offers, options, gallery, cart).
-   The product comes from <body data-prodotto="...">. Prices come from catalogo.js. */
+/* Logica comune delle pagine prodotto (offerte 1/2/3, opzioni, galleria, carrello).
+   Il prodotto lo dice <body data-prodotto="...">. I prezzi arrivano da catalogo.js. */
 (function () {
 const C = window.CATALOGO;
 const ID = document.body.dataset.prodotto;
@@ -9,9 +9,9 @@ const [uno, tanti] = P.unita;
 
 const prezzoN = n => Math.round(P.prezzo * n * (100 - C.scontoPer(n)) / 100);
 const OFFERTE = [
-  { n: 1, titolo: '1 ' + uno,   sotto: 'For you · one for each ankle' },
-  { n: 2, titolo: '2 ' + tanti, sotto: 'One for you, one to gift', tag: 'MOST POPULAR' },
-  { n: 3, titolo: '3 ' + tanti, sotto: 'For the whole crew', tag: 'BEST VALUE', blu: true }
+  { n: 1, titolo: '1 ' + uno,   sotto: 'Per te · uno per caviglia' },
+  { n: 2, titolo: '2 ' + tanti, sotto: 'Uno per te, uno da regalare', tag: 'IL PIÙ SCELTO' },
+  { n: 3, titolo: '3 ' + tanti, sotto: 'Per tutto il reparto', tag: 'MIGLIOR PREZZO', blu: true }
 ];
 
 let off = OFFERTE[0];
@@ -28,11 +28,11 @@ boxOff.innerHTML = OFFERTE.map((o, i) => {
     <span class="cosa">
       <span class="t">${o.titolo}</span>
       <span class="s" style="display:block">${o.sotto}</span>
-      ${risp > 0 ? `<span class="risp">-${C.scontoPer(o.n)}% · you save ${fmt(risp)}</span>` : ''}
+      ${risp > 0 ? `<span class="risp">-${C.scontoPer(o.n)}% · risparmi ${fmt(risp)}</span>` : ''}
     </span>
     <span class="prezzi">
       <span class="p" style="display:block">${fmt(prezzo)}</span>
-      ${o.n > 1 ? `<span class="cad">${fmt(Math.round(prezzo / o.n))} each</span>` : '<span class="cad">Free shipping</span>'}
+      ${o.n > 1 ? `<span class="cad">${fmt(Math.round(prezzo / o.n))} cad.</span>` : '<span class="cad">Spedizione gratuita</span>'}
     </span>
   </button>`;
 }).join('');
@@ -61,7 +61,7 @@ function aggiorna() {
   document.querySelectorAll('.offerta').forEach((b, i) => b.classList.toggle('on', OFFERTE[i] === off));
   disegnaPezzi();
   const t = totaleScelto();
-  document.getElementById('compra').textContent = 'Add to cart — ' + fmt(t.importo);
+  document.getElementById('compra').textContent = 'Aggiungi al carrello — ' + fmt(t.importo);
   document.getElementById('prezzoSticky').innerHTML = fmt(t.importo) + '<small>' + off.titolo + '</small>';
 }
 
@@ -84,7 +84,7 @@ function compra() {
 function alertCarrelloPieno() {
   const box = document.getElementById('cartCorpo');
   setTimeout(() => box && box.insertAdjacentHTML('afterbegin',
-    `<div class="cart-bundle">You can add up to ${C.maxPezzi} items per order. For bigger orders email us at ${C.email}</div>`), 30);
+    `<div class="cart-bundle">Puoi mettere al massimo ${C.maxPezzi} pezzi per ordine. Per ordini più grandi scrivici a ${C.email}</div>`), 30);
 }
 document.getElementById('compra').onclick = compra;
 document.getElementById('compra2').onclick = compra;
@@ -100,7 +100,7 @@ aggiorna();
   const scadenza = new Date(2026, 11, 2, 23, 59);          // 2 dicembre 2026
   const oggi = new Date();
   if (oggi <= scadenza && oggi >= new Date(2026, 9, 15)) {
-    document.getElementById('natale-data').textContent = 'Wednesday, December 2';
+    document.getElementById('natale-data').textContent = 'mercoledì 2 dicembre';
     document.getElementById('natale').hidden = false;
   }
 })();
@@ -110,7 +110,7 @@ aggiorna();
   const foto = P.foto;
   const main = document.getElementById('fotoMain');
   const tb = document.getElementById('thumbs');
-  tb.innerHTML = foto.map((f, i) => `<button type="button" class="shot${i ? '' : ' on'}" data-i="${i}" aria-label="Photo ${i + 1}"><img src="${f}" alt="" loading="lazy" onerror="pmManca(this)"></button>`).join('');
+  tb.innerHTML = foto.map((f, i) => `<button type="button" class="shot${i ? '' : ' on'}" data-i="${i}" aria-label="Foto ${i + 1}"><img src="${f}" alt="" loading="lazy" onerror="pmManca(this)"></button>`).join('');
   const thumbs = [...tb.children];
   const dots = document.getElementById('dots');
   dots.innerHTML = foto.map((_, i) => '<i' + (i ? '' : ' class="on"') + '></i>').join('');

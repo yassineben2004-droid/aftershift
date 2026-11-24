@@ -19,7 +19,7 @@ const SITO = 'https://aftershiftstore.shop';
 
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
   c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-const euro = c => '$' + (c / 100).toFixed(2);
+const euro = require('../catalogo.js').fmt;   // 69,90 €
 
 function mailCliente({ numero, nome, prodotto, variante, qta, totale, indirizzo, articoli }){
   const riga = (a, b) => `<tr><td style="padding:8px 0;color:#5b6b82">${a}</td><td style="padding:8px 0;text-align:right;color:#0b1b33;font-weight:600">${b}</td></tr>`;
@@ -30,42 +30,42 @@ function mailCliente({ numero, nome, prodotto, variante, qta, totale, indirizzo,
       <img src="${SITO}/img/logo.png" alt="AfterShift" height="32" style="height:32px;width:auto">
     </div>
     <div style="padding:28px 24px">
-      <h1 style="margin:0 0 10px;font-size:22px;color:#0b1b33">Thank you${nome ? ', ' + esc(nome) : ''}! Your order is confirmed 🎉</h1>
+      <h1 style="margin:0 0 10px;font-size:22px;color:#0b1b33">Grazie${nome ? ' ' + esc(nome) : ''}! Il tuo ordine è confermato 🎉</h1>
       <p style="margin:0 0 20px;color:#5b6b82;font-size:15px;line-height:1.5">
-        We've received your payment. As soon as your order ships, we'll email you again with your tracking number.
+        Abbiamo ricevuto il pagamento. Appena il pacco parte ti scriviamo di nuovo con il numero di tracciamento.
       </p>
       <table style="width:100%;border-collapse:collapse;font-size:14.5px;border-top:1px solid #e3e9f1;border-bottom:1px solid #e3e9f1">
-        ${riga('Order number', esc(numero))}
+        ${riga('Numero ordine', esc(numero))}
         ${articoli.length
-          ? articoli.map((a, i) => riga(articoli.length > 1 ? 'Item ' + (i + 1) : 'Item', esc(a))).join('')
-          : riga('Product', esc(prodotto)) + riga('Details', esc(variante))}
-        ${riga('Quantity', esc(qta))}
-        ${riga('Shipping', 'Free')}
-        ${riga('<b style="color:#0b1b33">Total paid</b>', '<b>' + esc(totale) + '</b>')}
+          ? articoli.map((a, i) => riga(articoli.length > 1 ? 'Articolo ' + (i + 1) : 'Articolo', esc(a))).join('')
+          : riga('Prodotto', esc(prodotto)) + riga('Dettagli', esc(variante))}
+        ${riga('Quantità', esc(qta))}
+        ${riga('Spedizione', 'Gratuita')}
+        ${riga('<b style="color:#0b1b33">Totale pagato</b>', '<b>' + esc(totale) + '</b>')}
       </table>
-      <p style="margin:20px 0 4px;font-size:13px;color:#5b6b82;font-weight:700;letter-spacing:.5px">SHIPPING TO</p>
+      <p style="margin:20px 0 4px;font-size:13px;color:#5b6b82;font-weight:700;letter-spacing:.5px">SPEDIZIONE A</p>
       <p style="margin:0;font-size:14.5px;color:#0b1b33;line-height:1.5">${indirizzo.map(esc).join('<br>')}</p>
       <p style="margin:24px 0 0;font-size:13.5px;color:#5b6b82;line-height:1.5">
-        Questions, or something to correct? Just reply to this email — a real person reads it.
+        Domande o qualcosa da correggere? Rispondi a questa email: la legge una persona vera.
       </p>
     </div>
   </div>
   <p style="text-align:center;font-size:12px;color:#8a99ad;margin:16px 0 0">AfterShift · ${esc(EMAIL_STORE)}</p>
 </div>`;
   const text =
-`Thank you${nome ? ', ' + nome : ''}! Your order is confirmed.
+`Grazie${nome ? ' ' + nome : ''}! Il tuo ordine è confermato.
 
-Order number: ${numero}
-${articoli.length ? articoli.map((a, i) => '- ' + a).join('\n') : 'Product: ' + prodotto + '\nDetails: ' + variante}
-Quantity: ${qta}
-Shipping: free
-Total paid: ${totale}
+Numero ordine: ${numero}
+${articoli.length ? articoli.map((a, i) => '- ' + a).join('\n') : 'Prodotto: ' + prodotto + '\nDettagli: ' + variante}
+Quantità: ${qta}
+Spedizione: gratuita
+Totale pagato: ${totale}
 
-Shipping to:
+Spedizione a:
 ${indirizzo.join('\n')}
 
-As soon as your order ships we'll email you the tracking number.
-Any questions? Just reply to this email.
+Appena il pacco parte ti mandiamo il numero di tracciamento.
+Domande? Rispondi pure a questa email.
 
 AfterShift`;
   return { html, text };
@@ -107,7 +107,7 @@ module.exports = async (req, res) => {
     articoli: Object.keys(m).filter(k => /^articolo_\d+$/.test(k))
       .sort((a, b) => +a.split('_')[1] - +b.split('_')[1]).map(k => m[k]),
     totale: euro(pi.amount),
-    indirizzo: [s.name, a.line1, a.line2, [a.city, a.state, a.postal_code].filter(Boolean).join(', '), a.country, s.phone ? 'Phone ' + s.phone : '']
+    indirizzo: [s.name, a.line1, a.line2, [a.city, a.state, a.postal_code].filter(Boolean).join(', '), a.country, s.phone ? 'Tel. ' + s.phone : '']
       .filter(Boolean)
   };
 
@@ -122,7 +122,7 @@ module.exports = async (req, res) => {
       from: `"AfterShift" <${process.env.GMAIL_USER}>`,
       to: pi.receipt_email,
       replyTo: EMAIL_STORE,
-      subject: `Order ${dati.numero} confirmed 🎉`,
+      subject: `Ordine ${dati.numero} confermato 🎉`,
       html, text
     });
 

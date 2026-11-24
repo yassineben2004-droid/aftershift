@@ -1,45 +1,45 @@
 /* ============================================================
-   AFTERSHIFT CATALOG — single source of truth
-   Used by the SERVER (api/create-payment-intent.js) to compute what
-   the customer really pays, and by the SITE to show prices.
-   Prices in CENTS, US dollars (4999 = $49.99).
+   CATALOGO AFTERSHIFT — unica fonte di verità (mercato ITALIA dal 24/11/2026)
+   Lo usa il SERVER (api/create-payment-intent.js) per calcolare quanto paga
+   davvero il cliente, e il SITO per mostrare i prezzi.
+   Prezzi in CENTESIMI di euro (6990 = 69,90 €).
 
-   To change a price: edit here, then run `node strumenti/genera-pagine.js`
-   to rebuild the product pages. Done.
+   Per cambiare un prezzo: modifica qui, poi `node strumenti/genera-pagine.js`
+   per rigenerare le pagine. Fatto.
    ============================================================ */
 (function (root) {
 
 const CATALOGO = {
 
-  valuta_iso: 'usd',
+  valuta_iso: 'eur',
   email: 'support@aftershiftstore.shop',
 
-  // bundle discount on the whole cart, based on HOW MANY items are in it
-  // (any mix of products). The highest key means "or more".
-  sconti: { 2: 15, 3: 23 },        // 2 items -15%, 3 or more -23%
-  maxPezzi: 10,                     // max items per order
+  // sconto bundle su tutto il carrello in base a QUANTI pezzi ci sono
+  // (anche prodotti diversi). La chiave più alta vale "o più".
+  sconti: { 2: 15, 3: 23 },        // 2 pezzi -15%, 3 o più -23%
+  maxPezzi: 10,                     // massimo pezzi per ordine
 
   ordine: ['ankle'],
 
   prodotti: {
 
     ankle: {
-      nome: 'Heated Ankle & Foot Massager',
-      breve: 'Ankle Massager (pair)',
-      pagina: 'heated-ankle-massager.html',
-      prezzo: 6999,
+      nome: 'Massaggiatore Riscaldato per Caviglie e Piedi',
+      breve: 'Massaggiatore caviglie (paio)',
+      pagina: 'massaggiatore-caviglie.html',
+      prezzo: 6990,
       emoji: '🦶',
       accento: '#ff6a3d',
-      unita: ['pair', 'pairs'],
+      unita: ['paio', 'paia'],
       foto: [1, 2, 3, 4, 5, 6, 7].map(n => 'img/ankle-' + n + '.jpg'),
-      opzioni: []                     // one size, adjustable strap
+      opzioni: []                     // taglia unica, cinturino regolabile
     }
   }
 };
 
 /* ---------- shared helpers (same for site and server) ---------- */
 
-CATALOGO.fmt = c => '$' + (c / 100).toFixed(2);
+CATALOGO.fmt = c => (c / 100).toFixed(2).replace('.', ',') + ' €';
 
 // discount percentage for N items
 CATALOGO.scontoPer = function (n) {
@@ -65,7 +65,7 @@ CATALOGO.valuta = function (art) {
     parti.push(o.nome.toLowerCase() + ' ' + v.nome);
   }
   return { p: art.p, scelte, prezzo, nome: prod.nome, breve: prod.breve,
-           dettagli: parti.length ? parti.join(', ') : '1 ' + prod.unita[0] + ' · one size' };
+           dettagli: parti.length ? parti.join(', ') : '1 ' + prod.unita[0] + ' · taglia unica' };
 };
 
 // cart total: [{p, ...options}, ...]

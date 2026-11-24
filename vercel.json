@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/heated-ankle-massager", "destination": "/heated-ankle-massager.html" }
+  "redirects": [
+    { "source": "/heated-ankle-massager", "destination": "/massaggiatore-caviglie", "permanent": true },
+    { "source": "/heated-ankle-massager.html", "destination": "/massaggiatore-caviglie", "permanent": true }
   ]
 }

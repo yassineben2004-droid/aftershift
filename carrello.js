@@ -1,8 +1,8 @@
 /* ============================================================
-   AFTERSHIFT CART
-   Saved in the customer's browser (localStorage). Prices shown here
-   are only indicative: the real ones are computed by the server.
-   Needs catalogo.js loaded first.
+   CARRELLO AFTERSHIFT
+   Salvato nel browser del cliente (localStorage). I prezzi mostrati
+   qui sono solo indicativi: quelli veri li calcola il server.
+   Serve catalogo.js caricato prima.
    ============================================================ */
 (function () {
 const C = window.CATALOGO;
@@ -68,9 +68,9 @@ function monta() {
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
   const velo = document.createElement('div'); velo.className = 'cart-velo'; velo.id = 'cartVelo';
   const pan = document.createElement('aside'); pan.className = 'cart-pan'; pan.id = 'cartPan';
-  pan.setAttribute('aria-label', 'Cart');
+  pan.setAttribute('aria-label', 'Carrello');
   pan.innerHTML = `
-    <div class="cart-testa"><b>Your cart</b><button type="button" aria-label="Close" id="cartChiudi">×</button></div>
+    <div class="cart-testa"><b>Il tuo carrello</b><button type="button" aria-label="Chiudi" id="cartChiudi">×</button></div>
     <div class="cart-corpo" id="cartCorpo"></div>
     <div class="cart-piede" id="cartPiede"></div>`;
   document.body.appendChild(velo); document.body.appendChild(pan);
@@ -87,7 +87,7 @@ function monta() {
   if (h && !document.body.hasAttribute('data-no-cart')) {
     h.style.position = h.style.position || 'sticky';
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'cart-btn'; b.setAttribute('aria-label', 'Open cart');
+    b.type = 'button'; b.className = 'cart-btn'; b.setAttribute('aria-label', 'Apri il carrello');
     b.innerHTML = '🛒<span class="n" id="cartN" hidden>0</span>';
     b.onclick = apri;
     h.appendChild(b);
@@ -107,9 +107,9 @@ function messaggioBundle(q) {
   const attuale = C.scontoPer(q);
   if (prossima) {
     const manca = prossima - q;
-    return `<div class="cart-bundle">🎁 Add <b>${manca} more</b> and get <b>${C.sconti[prossima]}% off everything</b>${attuale ? ` instead of ${attuale}%` : ''}.</div>`;
+    return `<div class="cart-bundle">🎁 Aggiungi <b>${manca} ${manca === 1 ? 'altro pezzo' : 'altri pezzi'}</b> e hai <b>-${C.sconti[prossima]}% su tutto</b>${attuale ? ` invece del ${attuale}%` : ''}.</div>`;
   }
-  return `<div class="cart-bundle ok">✅ Best bundle discount unlocked: <b>${attuale}% off your whole cart</b>.</div>`;
+  return `<div class="cart-bundle ok">✅ Sconto bundle massimo sbloccato: <b>-${attuale}% su tutto il carrello</b>.</div>`;
 }
 
 function miniFoto(prod) {
@@ -122,8 +122,8 @@ function disegna() {
   const piede = document.getElementById('cartPiede');
   const tot = C.totale(a);
   if (!a.length) {
-    corpo.innerHTML = `<div class="cart-vuoto">Your cart is empty.<br>Pick your favorite 👇</div>` + suggerimenti([]);
-    piede.innerHTML = `<a class="cart-vai" aria-disabled="true">Checkout</a>`;
+    corpo.innerHTML = `<div class="cart-vuoto">Il carrello è vuoto.<br>Scegli il tuo preferito 👇</div>` + suggerimenti([]);
+    piede.innerHTML = `<a class="cart-vai" aria-disabled="true">Vai al pagamento</a>`;
     return;
   }
   corpo.innerHTML = messaggioBundle(a.length) + tot.righe.map((r, i) => {
@@ -132,22 +132,22 @@ function disegna() {
       <div class="mini">${miniFoto(prod)}</div>
       <div class="cosa"><div class="nm">${esc(prod.breve)}</div><div class="dt">${esc(r.dettagli)}</div></div>
       <div class="pr">${fmt(r.prezzo)}</div>
-      <button type="button" class="via" data-via="${i}" aria-label="Remove">×</button>
+      <button type="button" class="via" data-via="${i}" aria-label="Rimuovi">×</button>
     </div>`;
   }).join('') + suggerimenti(a.map(x => x.p));
   piede.innerHTML = `
-    <div class="cart-t"><span>Subtotal</span><span>${fmt(tot.pieno)}</span></div>
-    ${tot.sconto ? `<div class="cart-t sc"><span>Bundle discount -${tot.pct}%</span><span>− ${fmt(tot.sconto)}</span></div>` : ''}
-    <div class="cart-t"><span>Shipping</span><span style="color:#1f9d6b;font-weight:700">Free</span></div>
-    <div class="cart-t fin"><span>Total</span><span>${fmt(tot.importo)}</span></div>
-    <a class="cart-vai" href="checkout.html">Checkout →</a>
-    <div class="cart-nota">🔒 Secure payment · card, Apple Pay, Google Pay</div>`;
+    <div class="cart-t"><span>Subtotale</span><span>${fmt(tot.pieno)}</span></div>
+    ${tot.sconto ? `<div class="cart-t sc"><span>Sconto bundle -${tot.pct}%</span><span>− ${fmt(tot.sconto)}</span></div>` : ''}
+    <div class="cart-t"><span>Spedizione</span><span style="color:#1f9d6b;font-weight:700">Gratuita</span></div>
+    <div class="cart-t fin"><span>Totale</span><span>${fmt(tot.importo)}</span></div>
+    <a class="cart-vai" href="checkout.html">Vai al pagamento →</a>
+    <div class="cart-nota">🔒 Pagamento sicuro · carta, Apple Pay, Google Pay</div>`;
 }
 
 function suggerimenti(presenti) {
   const altri = C.ordine.filter(id => !presenti.includes(id)).slice(0, 4);
   if (!altri.length) return '';
-  return `<div class="cart-sugg"><h4>${presenti.length ? 'COMPLETE THE BUNDLE' : 'SHOP AFTERSHIFT'}</h4><div class="lista">` +
+  return `<div class="cart-sugg"><h4>${presenti.length ? 'COMPLETA IL BUNDLE' : 'I PRODOTTI AFTERSHIFT'}</h4><div class="lista">` +
     altri.map(id => { const p = C.prodotti[id];
       return `<a href="${p.pagina}"><span class="mini">${miniFoto(p)}</span><span>${esc(p.breve)}<small>${fmt(p.prezzo)}</small></span></a>`; }).join('') +
     `</div></div>`;

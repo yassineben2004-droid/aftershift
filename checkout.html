@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -85,81 +85,81 @@ input:focus{border-color:var(--squalo);box-shadow:0 0 0 3px rgba(59,143,214,.15)
 
 <header>
   <a href="index.html"><img src="img/logo.png" alt="AfterShift" style="height:30px;width:auto"></a>
-  <a class="indietro" href="index.html">← Back to shop</a>
+  <a class="indietro" href="index.html">← Torna al negozio</a>
 </header>
 
 <div class="wrap">
   <div class="cols">
 
     <div>
-      <h1>Complete your order</h1>
+      <h1>Completa l'ordine</h1>
       <form id="form-pagamento">
 
-        <h2>CONTACT</h2>
+        <h2>CONTATTO</h2>
         <div class="campo">
           <label for="email">Email</label>
-          <input type="email" id="email" placeholder="you@email.com" required>
+          <input type="email" id="email" placeholder="tua@email.it" required>
         </div>
 
-        <h2>SHIPPING</h2>
+        <h2>SPEDIZIONE</h2>
         <div class="campo due">
           <div>
-            <label for="nome">First name</label>
-            <input type="text" id="nome" placeholder="Jane" required>
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" placeholder="Maria" required>
           </div>
           <div>
-            <label for="cognome">Last name</label>
-            <input type="text" id="cognome" placeholder="Smith" required>
+            <label for="cognome">Cognome</label>
+            <input type="text" id="cognome" placeholder="Rossi" required>
           </div>
         </div>
         <div class="campo">
-          <label for="paese">Country</label>
+          <label for="paese">Paese</label>
           <select id="paese" required></select>
         </div>
         <div class="campo">
-          <label for="via">Address</label>
-          <input type="text" id="via" placeholder="123 Main Street" required>
+          <label for="via">Indirizzo</label>
+          <input type="text" id="via" placeholder="Via Roma 12" required>
         </div>
         <div class="campo">
-          <label for="via2">Apartment, suite, etc. (optional)</label>
-          <input type="text" id="via2" placeholder="Apt 4B">
+          <label for="via2">Scala, interno, citofono (facoltativo)</label>
+          <input type="text" id="via2" placeholder="Scala B, int. 4">
         </div>
         <div class="campo due">
           <div>
-            <label for="citta">City</label>
-            <input type="text" id="citta" placeholder="Austin" required>
+            <label for="citta">Città</label>
+            <input type="text" id="citta" placeholder="Milano" required>
           </div>
           <div>
-            <label for="cap">ZIP / Postal code</label>
-            <input type="text" id="cap" placeholder="78701" required>
+            <label for="cap">CAP</label>
+            <input type="text" id="cap" placeholder="20121" inputmode="numeric" required>
           </div>
         </div>
         <div class="campo">
-          <label for="stato">State / Province / Region</label>
-          <input type="text" id="stato" placeholder="TX">
+          <label for="stato">Provincia (sigla)</label>
+          <input type="text" id="stato" placeholder="MI" maxlength="2" pattern="[A-Za-z]{2}" title="Sigla della provincia, es. MI" autocapitalize="characters" required>
         </div>
         <div class="campo">
-          <label for="telefono">Phone (for the courier)</label>
-          <input type="text" id="telefono" placeholder="+1 555 123 4567">
+          <label for="telefono">Telefono (per il corriere)</label>
+          <input type="tel" id="telefono" placeholder="333 1234567" required>
         </div>
 
-        <h2>PAYMENT</h2>
-        <div id="payment-element"><div class="caricamento">Loading payment methods…</div></div>
+        <h2>PAGAMENTO</h2>
+        <div id="payment-element"><div class="caricamento">Carico i metodi di pagamento…</div></div>
 
-        <button class="paga" id="paga" type="submit" disabled>Pay <span id="totBtn"></span></button>
+        <button class="paga" id="paga" type="submit" disabled>Paga <span id="totBtn"></span></button>
         <div class="errore" id="errore"></div>
-        <div class="nota">By clicking “Pay” you confirm your order and accept our <a href="terms.html" target="_blank">Terms of Sale</a> and <a href="shipping.html#returns" target="_blank">Return Policy</a>. Your data is handled as described in our <a href="privacy.html" target="_blank">Privacy Policy</a>.</div>
-        <div class="nota">🔒 Payments secured by Stripe. Your card details never touch our servers.</div>
+        <div class="nota">Cliccando “Paga” confermi l'ordine e accetti i <a href="terms.html" target="_blank">Termini di vendita</a> e le <a href="shipping.html#returns" target="_blank">condizioni di reso</a>. I tuoi dati sono trattati come indicato nella <a href="privacy.html" target="_blank">Privacy policy</a>.</div>
+        <div class="nota">🔒 Pagamento protetto da Stripe. I dati della carta non transitano mai dai nostri server.</div>
       </form>
     </div>
 
     <div class="riepilogo">
-      <div class="righe" id="righe"><div class="var">Loading…</div></div>
-      <a class="modifica" href="index.html" id="modifica">Edit cart</a>
-      <div class="tot-riga"><span>Subtotal</span><span id="subtotale">—</span></div>
-      <div class="tot-riga" id="rigaSconto" style="display:none"><span>Bundle discount</span><span class="gratis" id="sconto">—</span></div>
-      <div class="tot-riga"><span>Shipping</span><span class="gratis">Free</span></div>
-      <div class="tot-riga finale"><span>Total</span><span id="totale">—</span></div>
+      <div class="righe" id="righe"><div class="var">Caricamento…</div></div>
+      <a class="modifica" href="index.html" id="modifica">Modifica il carrello</a>
+      <div class="tot-riga"><span>Subtotale</span><span id="subtotale">—</span></div>
+      <div class="tot-riga" id="rigaSconto" style="display:none"><span>Sconto bundle</span><span class="gratis" id="sconto">—</span></div>
+      <div class="tot-riga"><span>Spedizione</span><span class="gratis">Gratuita</span></div>
+      <div class="tot-riga finale"><span>Totale</span><span id="totale">—</span></div>
     </div>
 
   </div>
@@ -172,19 +172,11 @@ input:focus{border-color:var(--squalo);box-shadow:0 0 0 3px rgba(59,143,214,.15)
 // Stripe publishable key (public: it can live in the site code). Same Stripe account as the other stores.
 const STRIPE_PUBLIC_KEY = 'pk_live_51HUprcHeIz0GVO4KOlGb3ZdLrn4OfWrqgr7tjmMkFYiPK0RiaeM11B11CTFK67MptXSM47rhaZTfjq2F3e9W4xMO00HXznXO8v';
 
-// countries we ship to (ISO code, name). Most common first.
-const PAESI = [['US','United States'],['CA','Canada'],['GB','United Kingdom'],['AU','Australia'],['IE','Ireland'],['NZ','New Zealand'],
-  ['AT','Austria'],['BE','Belgium'],['CH','Switzerland'],['CZ','Czech Republic'],['DE','Germany'],['DK','Denmark'],['ES','Spain'],
-  ['FI','Finland'],['FR','France'],['GR','Greece'],['HR','Croatia'],['HU','Hungary'],['IT','Italy'],['LU','Luxembourg'],
-  ['NL','Netherlands'],['NO','Norway'],['PL','Poland'],['PT','Portugal'],['RO','Romania'],['SE','Sweden'],['SI','Slovenia'],
-  ['SK','Slovakia'],['AE','United Arab Emirates'],['IL','Israel'],['JP','Japan'],['KR','South Korea'],['SG','Singapore'],
-  ['HK','Hong Kong'],['MX','Mexico'],['BR','Brazil'],['ZA','South Africa']];
+// mercato Italia (dal 24/11/2026): si spedisce solo in Italia (+ San Marino e Vaticano)
+const PAESI = [['IT','Italia'],['SM','San Marino'],['VA','Città del Vaticano']];
 const selPaese = document.getElementById('paese');
 selPaese.innerHTML = PAESI.map(([c, n]) => `<option value="${c}">${n}</option>`).join('');
-try {   // pre-select the visitor's country from the browser language (en-GB → GB), fallback US
-  const reg = (navigator.language || '').split('-')[1];
-  if (reg && PAESI.some(([c]) => c === reg.toUpperCase())) selPaese.value = reg.toUpperCase();
-} catch (e) {}
+selPaese.value = 'IT';
 
 const params = new URLSearchParams(location.search);
 const articoli = Carrello.leggi();
@@ -215,8 +207,8 @@ async function avvia(){
     dati = await chiediServer({ solo_prezzo: true });
   } catch(err){
     const box = document.querySelector('#payment-element .caricamento');
-    if(box) box.textContent = 'Unable to start the payment.';
-    mostraErrore('Something went wrong. Reload the page or try again in a moment.');
+    if(box) box.textContent = 'Impossibile avviare il pagamento.';
+    mostraErrore('Qualcosa è andato storto. Ricarica la pagina o riprova tra poco.');
     return;
   }
 
@@ -239,7 +231,7 @@ async function avvia(){
   document.getElementById('totBtn').textContent    = usd(importo);
 
   if(pieno > importo){
-    document.querySelector('#rigaSconto span').textContent = test ? 'Test order' : 'Bundle discount -' + pct + '%';
+    document.querySelector('#rigaSconto span').textContent = test ? 'Ordine di prova' : 'Sconto bundle -' + pct + '%';
     document.getElementById('sconto').textContent = '− ' + usd(pieno - importo);
     document.getElementById('rigaSconto').style.display = 'flex';
   }
@@ -247,6 +239,7 @@ async function avvia(){
   // payment form styled like the site: the customer never leaves AfterShift
   elements = stripe.elements({
     mode:'payment',
+    locale:'it',
     amount: importo,
     currency: CATALOGO.valuta_iso,
     appearance:{
@@ -282,7 +275,7 @@ async function avvia(){
 function ripristinaBottone(){
   const bottone = document.getElementById('paga');
   bottone.disabled = false;
-  bottone.innerHTML = 'Pay <span id="totBtn">' + document.getElementById('totale').textContent + '</span>';
+  bottone.innerHTML = 'Paga <span id="totBtn">' + document.getElementById('totale').textContent + '</span>';
 }
 
 document.getElementById('form-pagamento').addEventListener('submit', async e => {
@@ -291,13 +284,13 @@ document.getElementById('form-pagamento').addEventListener('submit', async e => 
 
   const bottone = document.getElementById('paga');
   bottone.disabled = true;
-  bottone.innerHTML = '<span class="spinner"></span>Processing…';
+  bottone.innerHTML = '<span class="spinner"></span>Elaborazione…';
   document.getElementById('errore').style.display = 'none';
 
   // 1) validate the card details
   const { error: erroreModulo } = await elements.submit();
   if(erroreModulo){
-    mostraErrore(erroreModulo.message || 'Please check your payment details.');
+    mostraErrore(erroreModulo.message || 'Controlla i dati di pagamento.');
     ripristinaBottone();
     return;
   }
@@ -307,7 +300,7 @@ document.getElementById('form-pagamento').addEventListener('submit', async e => 
   try {
     ({ clientSecret } = await chiediServer({}));
   } catch(err){
-    mostraErrore('We couldn\'t start the payment. Please try again in a moment.');
+    mostraErrore('Non riusciamo ad avviare il pagamento. Riprova tra poco.');
     ripristinaBottone();
     return;
   }
@@ -328,7 +321,7 @@ document.getElementById('form-pagamento').addEventListener('submit', async e => 
           line2:       v('via2') || undefined,
           postal_code: v('cap'),
           city:        v('citta'),
-          state:       v('stato') || undefined,
+          state:       v('stato').toUpperCase() || undefined,
           country:     v('paese')
         }
       }
@@ -337,7 +330,7 @@ document.getElementById('form-pagamento').addEventListener('submit', async e => 
 
   // we only get here if the payment did NOT go through
   if(error){
-    mostraErrore(error.message || 'Payment failed. Please check your card details.');
+    mostraErrore(error.message || 'Pagamento non riuscito. Controlla i dati della carta.');
     ripristinaBottone();
   }
 });

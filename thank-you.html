@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="img/favicon.png">
-<title>Order confirmed — AfterShift</title>
+<title>Ordine confermato — AfterShift</title>
 <script src="https://js.stripe.com/v3/"></script>
 <style>
 :root{--notte:#0b1f3d;--sabbia:#fbf7f1;--corallo:#ff6a3d;--testo:#17243a;--grigio:#5e6b80}
@@ -24,7 +24,7 @@ padding:16px 30px;border-radius:13px;font-weight:800;text-decoration:none;font-s
 </head>
 <body data-no-cart>
 <div class="box" id="box">
-  <div class="attesa">Checking your payment…</div>
+  <div class="attesa">Controllo il pagamento…</div>
 </div>
 
 <script src="catalogo.js"></script>
@@ -41,19 +41,19 @@ function mostra(icona, titolo, testo, colore){
     '<div class="cerchio" style="background:' + colore + '">' + icona + '</div>' +
     '<h1>' + titolo + '</h1>' +
     '<p>' + testo + '</p>' +
-    '<a class="btn" href="index.html">Back to shop</a>' +
+    '<a class="btn" href="index.html">Torna al negozio</a>' +
     '<div><span class="marchio"><img src="img/logo.png" alt="AfterShift" style="height:24px;width:auto;display:block"></span></div>';
 }
 
 if(!clientSecret){
-  mostra('🛒', 'No order to show', 'Looks like you landed here by mistake.', '#e7f2fc');
+  mostra('🛒', 'Nessun ordine da mostrare', 'Sembra che tu sia arrivato qui per sbaglio.', '#e7f2fc');
 } else {
   stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
     switch(paymentIntent && paymentIntent.status){
       case 'succeeded':
         Carrello.svuota();   // order placed: the cart starts empty again
-        mostra('✓', 'Order confirmed!',
-          'Thank you, we\'ve received your payment. A confirmation email is on its way, and you\'ll get your tracking number as soon as your order ships.',
+        mostra('✓', 'Ordine confermato!',
+          'Grazie, abbiamo ricevuto il pagamento. Ti stiamo mandando l\'email di conferma e riceverai il numero di tracciamento appena il pacco parte.',
           '#e6f6ee');
         // send the confirmation email (the server checks with Stripe that the payment is real)
         fetch('/api/conferma-ordine', {
@@ -63,13 +63,13 @@ if(!clientSecret){
         }).catch(() => {});
         break;
       case 'processing':
-        mostra('⏳', 'Payment processing',
-          'Your bank is confirming the transaction. We\'ll email you as soon as everything is done.',
+        mostra('⏳', 'Pagamento in elaborazione',
+          'La tua banca sta confermando la transazione. Ti scriviamo appena è tutto a posto.',
           '#fff6dc');
         break;
       default:
-        mostra('✕', 'Payment failed',
-          'We couldn\'t charge your card. No money was taken: you can try again whenever you like.',
+        mostra('✕', 'Pagamento non riuscito',
+          'Non siamo riusciti ad addebitare la carta. Non ti è stato preso nessun importo: puoi riprovare quando vuoi.',
           '#fff0f0');
     }
   });
